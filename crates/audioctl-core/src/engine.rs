@@ -114,21 +114,24 @@ impl Engine {
         Ok(self.devices())
     }
 
-    pub fn set_volume(&self, id: &str, value: Value) -> anyhow::Result<DeviceSnapshot> {
-        let volume = self.preview_volume(id, value)?;
-        self.call(AudioMsg::SetVolume { id: id.to_string(), volume, reply: None }, true)?;
-        self.snapshot(id)
+    pub fn set_volume(&self, reference: &str, value: Value) -> anyhow::Result<DeviceSnapshot> {
+        let id = self.require_id(reference)?;
+        let volume = self.preview_volume(&id, value)?;
+        self.call(AudioMsg::SetVolume { id: id.clone(), volume, reply: None }, true)?;
+        self.snapshot(&id)
     }
 
-    pub fn set_mute(&self, id: &str, muted: bool) -> anyhow::Result<DeviceSnapshot> {
-        self.call(AudioMsg::SetMute { id: id.to_string(), muted, reply: None }, true)?;
-        self.snapshot(id)
+    pub fn set_mute(&self, reference: &str, muted: bool) -> anyhow::Result<DeviceSnapshot> {
+        let id = self.require_id(reference)?;
+        self.call(AudioMsg::SetMute { id: id.clone(), muted, reply: None }, true)?;
+        self.snapshot(&id)
     }
 
-    pub fn set_default(&self, id: &str) -> anyhow::Result<DeviceSnapshot> {
+    pub fn set_default(&self, reference: &str) -> anyhow::Result<DeviceSnapshot> {
+        let id = self.require_id(reference)?;
         let communications = self.config().general.set_communications_default;
-        self.call(AudioMsg::SetDefault { id: id.to_string(), communications, reply: None }, true)?;
-        self.snapshot(id)
+        self.call(AudioMsg::SetDefault { id: id.clone(), communications, reply: None }, true)?;
+        self.snapshot(&id)
     }
 
     /// Fast path for the tray wheel: the cache updates immediately and the write is queued.
@@ -312,6 +315,10 @@ impl Engine {
             }
         }
         None
+    }
+
+    fn require_id(&self, reference: &str) -> anyhow::Result<String> {
+        self.resolve_id(reference).ok_or_else(|| anyhow!("device '{reference}' not found"))
     }
 
     fn snapshot(&self, id: &str) -> anyhow::Result<DeviceSnapshot> {
@@ -662,6 +669,36 @@ mod tests {
         engine.execute("o next").unwrap();
         assert_eq!(engine.default_of(Flow::Render).unwrap().name, "Speakers");
         assert!(engine.resolve("headphones").unwrap().hidden);
+    }
+
+    #[test]
+    fn mqtt_key_controls_a_device_whose_windows_id_is_different() {
+        use crate::model::{FormFactor, LiveDevice};
+        let id = "{0.0.0.00000000}.{aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee}";
+        let engine = Engine::new(
+            Config::default(),
+            None,
+            BackendKind::Mock(crate::backend::MockBackend::new(vec![LiveDevice {
+                id: id.into(),
+                name: "Speakers".into(),
+                adapter: "Realtek".into(),
+                flow: Flow::Render,
+                form_factor: FormFactor::Speakers,
+                volume: 40,
+                muted: false,
+                is_default: true,
+                is_default_communications: true,
+            }])),
+        );
+        engine.rescan().unwrap();
+        let key = engine.devices()[0].key.clone();
+        assert_ne!(key, id);
+
+        let snap = engine.set_volume(&key, Value::Abs(15)).unwrap();
+        assert_eq!(snap.id, id);
+        assert_eq!(snap.volume, 15);
+        assert!(engine.set_mute(&key, true).unwrap().muted);
+        assert!(engine.set_default(&key).unwrap().is_default);
     }
 
     #[test]
