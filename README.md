@@ -29,8 +29,8 @@ npm run build    # релиз и установщики NSIS/MSI в target/relea
 Релиз собирается по тегу `v*`:
 
 ```powershell
-git tag v0.1.0
-git push origin v0.1.0
+git tag v1.0.0
+git push origin v1.0.0
 ```
 
 ## Язык команд
