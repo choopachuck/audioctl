@@ -1,0 +1,39 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "audioctl уже настроен",
+      "mqtt_missing": "Интеграция MQTT не настроена"
+    },
+    "error": {
+      "invalid_base_topic": "Тема без пробелов и подстановок",
+      "invalid_node_id": "Идентификатор узла без пробелов, слешей и подстановок"
+    },
+    "step": {
+      "user": {
+        "title": "audioctl",
+        "description": "audioctl сам публикует состояние. Оставьте идентификатор узла пустым, чтобы следить за всеми компьютерами.",
+        "data": { "base_topic": "Базовая тема", "node_id": "Идентификатор узла" }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": { "base_topic": "Базовая тема", "node_id": "Идентификатор узла" }
+      }
+    }
+  },
+  "entity": {
+    "number": { "volume": { "name": "Громкость" } },
+    "switch": { "mute": { "name": "Без звука" } },
+    "button": {
+      "default": { "name": "Сделать основным" },
+      "rescan": { "name": "Обновить список" }
+    },
+    "select": {
+      "output": { "name": "Устройство вывода" },
+      "input": { "name": "Микрофон" }
+    },
+    "text": { "command": { "name": "Команда" } }
+  }
+}

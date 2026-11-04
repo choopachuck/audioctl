@@ -1,0 +1,46 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "audioctl is already configured",
+      "mqtt_missing": "The MQTT integration is not set up"
+    },
+    "error": {
+      "invalid_base_topic": "Enter a topic without spaces or wildcards",
+      "invalid_node_id": "Enter a node id without spaces, slashes or wildcards"
+    },
+    "step": {
+      "user": {
+        "title": "audioctl",
+        "description": "audioctl publishes its own retained state. Leave the node id empty to follow every computer.",
+        "data": {
+          "base_topic": "Base topic",
+          "node_id": "Node id"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "audioctl",
+        "data": {
+          "base_topic": "Base topic",
+          "node_id": "Node id"
+        }
+      }
+    }
+  },
+  "entity": {
+    "number": { "volume": { "name": "Volume" } },
+    "switch": { "mute": { "name": "Mute" } },
+    "button": {
+      "default": { "name": "Make default" },
+      "rescan": { "name": "Rescan" }
+    },
+    "select": {
+      "output": { "name": "Output device" },
+      "input": { "name": "Input device" }
+    },
+    "text": { "command": { "name": "Command" } }
+  }
+}

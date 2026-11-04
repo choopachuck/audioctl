@@ -1,0 +1,15 @@
+{
+  "entity": {
+    "number": { "volume": { "default": "mdi:volume-high" } },
+    "switch": { "mute": { "default": "mdi:volume-mute" } },
+    "button": {
+      "default": { "default": "mdi:check" },
+      "rescan": { "default": "mdi:refresh" }
+    },
+    "select": {
+      "output": { "default": "mdi:speaker" },
+      "input": { "default": "mdi:microphone" }
+    },
+    "text": { "command": { "default": "mdi:console-line" } }
+  }
+}

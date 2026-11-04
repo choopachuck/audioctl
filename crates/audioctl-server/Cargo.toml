@@ -1,0 +1,21 @@
+[package]
+name = "audioctl-server"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+audioctl-core.workspace = true
+anyhow.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+axum = { version = "0.8", features = ["ws"] }
+tower-http = { version = "0.6", features = ["cors"] }
+futures-util = "0.3"
+rumqttc = "0.24"
+
+[dev-dependencies]
+tower = { version = "0.5", features = ["util"] }
+http-body-util = "0.1"
